@@ -12,37 +12,36 @@ Model name is converted to lowercase for the collection name:
 """
 
 from pydantic import BaseModel, Field
-from typing import Optional
+from typing import Optional, List
 
-# Example schemas (replace with your own):
-
-class User(BaseModel):
+class Car(BaseModel):
     """
-    Users collection schema
-    Collection name: "user" (lowercase of class name)
+    Cars collection schema
+    Collection name: "car"
     """
-    name: str = Field(..., description="Full name")
-    email: str = Field(..., description="Email address")
-    address: str = Field(..., description="Address")
-    age: Optional[int] = Field(None, ge=0, le=120, description="Age in years")
-    is_active: bool = Field(True, description="Whether user is active")
+    title: str = Field(..., description="Car model name")
+    brand: str = Field(..., description="Car brand/make")
+    description: Optional[str] = Field(None, description="Short description")
+    price: float = Field(..., ge=0, description="Price in USD")
+    imageUrl: Optional[str] = Field(None, description="Hero image URL")
+    modelUrl: Optional[str] = Field(None, description="3D model URL (e.g., Spline scene)")
+    in_stock: bool = Field(True, description="Availability")
 
-class Product(BaseModel):
+class CartItem(BaseModel):
     """
-    Products collection schema
-    Collection name: "product" (lowercase of class name)
+    Cart items collection schema
+    Collection name: "cartitem"
     """
-    title: str = Field(..., description="Product title")
-    description: Optional[str] = Field(None, description="Product description")
-    price: float = Field(..., ge=0, description="Price in dollars")
-    category: str = Field(..., description="Product category")
-    in_stock: bool = Field(True, description="Whether product is in stock")
+    session_id: str = Field(..., description="Client session identifier")
+    product_id: str = Field(..., description="Referenced product _id as string")
+    quantity: int = Field(1, ge=1, le=10, description="Quantity")
 
-# Add your own schemas here:
-# --------------------------------------------------
-
-# Note: The Flames database viewer will automatically:
-# 1. Read these schemas from GET /schema endpoint
-# 2. Use them for document validation when creating/editing
-# 3. Handle all database operations (CRUD) directly
-# 4. You don't need to create any database endpoints!
+class Order(BaseModel):
+    """
+    Orders collection schema
+    Collection name: "order"
+    """
+    session_id: str = Field(..., description="Client session identifier")
+    items: List[dict] = Field(..., description="List of items with product and quantity")
+    total: float = Field(..., ge=0, description="Order total in USD")
+    status: str = Field("created", description="Order status")
